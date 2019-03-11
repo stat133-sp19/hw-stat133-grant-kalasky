@@ -2,9 +2,9 @@
 
 Private Repository for HW assignments of Stat 133 (Spring 2019)
 
-- Name: Your name (first last)
-- Github username: usrname
-- Email: address [at] email.com
+- Name: Grant Kalasky
+- Github username: grant-kalasky
+- Email: grant.kalasky@berkeley.edu
 - Lab section: 101
 - GSI: Leia Organa
 
