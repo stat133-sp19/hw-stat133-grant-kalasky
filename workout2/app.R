@@ -37,10 +37,77 @@ ui <- fluidPage(
                        label = "Facet?",
                        c("No", "Yes"))
     )
-  )
+  ),
   
+  mainPanel(
+    h4("Timeline"),
+    
+    h4("Balances"),
+    verbatimTextOutput("table")
+  )
 )
 
-server <- function(input, output) {}
+server <- function(input, output) {
+  total_years <- reactive({input$years})
+  init_amount <- reactive({input$init_amount})
+  annual_contrib <- reactive({input$annual_contrib})
+  return_rate <- reactive({input$return_rate / 100})
+  growth_rate <- reactive({input$growth_rate / 100})
+  
+  output$table <- renderPrint({
+    #################################
+    #### Define helper functions ####
+    #################################
+    
+    future_value <- function(amount, rate, years) {
+      return(amount * ((1 + rate)^years))
+    }
+    
+    annuity <- function(contrib, rate, years) {
+      ratio <- ((1 + rate)^years - 1) / rate
+      return(contrib * ratio)
+    }
+    
+    growing_annuity <- function(contrib, rate, growth, years) {
+      ratio <- ((1 + rate)^years - (1 + growth)^years) / (rate - growth)
+      return(contrib * ratio)
+    }
+    
+    ###############################
+    #### Create Balances Table ####
+    ###############################
+    years <- seq(0, total_years(), 1)
+    no_contrib <- rep(0, total_years() - 1)
+    fixed_contrib <- rep(0, total_years() - 1)
+    growing_contrib <- rep(0, total_years() - 1)
+    
+    for (i in c(0:total_years())) {
+      no_contrib[i+1] <- future_value(amount = init_amount(), 
+                                      rate = return_rate(), 
+                                      years = i)
+      fixed_contrib[i+1] <- no_contrib[i+1] + annuity(contrib = annual_contrib(),
+                                                      rate = return_rate(), 
+                                                      years = i)
+      growing_contrib[i+1] <- no_contrib[i+1] + growing_annuity(contrib = annual_contrib(), 
+                                                                rate = return_rate(), 
+                                                                growth = growth_rate(), 
+                                                                years = i)
+    }
+    
+    balance_table <- data.frame(
+      years = years,
+      no_contrib = no_contrib,
+      fixed_contrib = fixed_contrib,
+      growing_contrib = growing_contrib
+    )
+    
+    print(balance_table)
+  })
+  
+  
+  ###############################
+  #### Create Timeline Graph ####
+  ###############################
+}
 
 shinyApp(ui = ui, server = server)
