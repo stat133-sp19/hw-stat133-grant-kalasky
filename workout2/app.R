@@ -1,4 +1,5 @@
 library(shiny)
+library(ggplot2)
 
 ui <- fluidPage(
   # App Tite
@@ -41,6 +42,7 @@ ui <- fluidPage(
   
   mainPanel(
     h4("Timeline"),
+    plotOutput(outputId = "timelinePlot"),
     
     h4("Balances"),
     verbatimTextOutput("table")
@@ -53,26 +55,26 @@ server <- function(input, output) {
   annual_contrib <- reactive({input$annual_contrib})
   return_rate <- reactive({input$return_rate / 100})
   growth_rate <- reactive({input$growth_rate / 100})
+  is_facet <- reactive({input$facet})
+  
+  #################################
+  #### Define helper functions ####
+  #################################
+  future_value <- function(amount, rate, years) {
+    return(amount * ((1 + rate)^years))
+  }
+  
+  annuity <- function(contrib, rate, years) {
+    ratio <- ((1 + rate)^years - 1) / rate
+    return(contrib * ratio)
+  }
+  
+  growing_annuity <- function(contrib, rate, growth, years) {
+    ratio <- ((1 + rate)^years - (1 + growth)^years) / (rate - growth)
+    return(contrib * ratio)
+  }
   
   output$table <- renderPrint({
-    #################################
-    #### Define helper functions ####
-    #################################
-    
-    future_value <- function(amount, rate, years) {
-      return(amount * ((1 + rate)^years))
-    }
-    
-    annuity <- function(contrib, rate, years) {
-      ratio <- ((1 + rate)^years - 1) / rate
-      return(contrib * ratio)
-    }
-    
-    growing_annuity <- function(contrib, rate, growth, years) {
-      ratio <- ((1 + rate)^years - (1 + growth)^years) / (rate - growth)
-      return(contrib * ratio)
-    }
-    
     ###############################
     #### Create Balances Table ####
     ###############################
@@ -104,10 +106,62 @@ server <- function(input, output) {
     print(balance_table)
   })
   
+  output$timelinePlot <- renderPlot({
+    years <- seq(0, total_years(), 1)
+    no_contrib <- rep(0, total_years() - 1)
+    fixed_contrib <- rep(0, total_years() - 1)
+    growing_contrib <- rep(0, total_years() - 1)
+    
+    for (i in c(0:total_years())) {
+      no_contrib[i+1] <- future_value(amount = init_amount(), 
+                                      rate = return_rate(), 
+                                      years = i)
+      fixed_contrib[i+1] <- no_contrib[i+1] + annuity(contrib = annual_contrib(),
+                                                      rate = return_rate(), 
+                                                      years = i)
+      growing_contrib[i+1] <- no_contrib[i+1] + growing_annuity(contrib = annual_contrib(), 
+                                                                rate = return_rate(), 
+                                                                growth = growth_rate(), 
+                                                                years = i)
+    }
+    
+    balance_table <- data.frame(
+      years = years,
+      no_contrib = no_contrib,
+      fixed_contrib = fixed_contrib,
+      growing_contrib = growing_contrib
+    )
+    
+    # check if facet == "No"
+    if (is_facet() == "No") {
+      
+      ggplot(data = balance_table) + 
+        geom_line(aes(x = years, y = no_contrib, colour = "no_contrib")) +
+        geom_line(aes(x = years, y = fixed_contrib, colour = "fixed_contrib")) +
+        geom_line(aes(x = years, y = growing_contrib, colour = "growing_contrib")) +
+        geom_point(aes(x = years, y = no_contrib, colour = "no_contrib")) +
+        geom_point(aes(x = years, y = fixed_contrib, colour = "fixed_contrib")) +
+        geom_point(aes(x = years, y = growing_contrib, colour = "growing_contrib")) +
+        scale_colour_manual("", 
+                            breaks = c("no_contrib", "fixed_contrib", "growing_contrib"),
+                            values = c("red", "green", "blue")) +
+        xlab("Years") + 
+        ylab("Investment Amount ($)") + guides(guide = "legend") + 
+        labs(title="Three Modes of Investing")
+    } else {
+      melt_balance_table <- melt(balance_table, id.vars = c("years"), 
+                                 measures.vars = c("no_contrib", "fixed_contrib", "growing_contrib"))
+      ggplot(data = melt_balance_table, aes(x = years, y = value, color = variable)) + 
+        geom_line() +
+        geom_point(aes(color=variable)) +
+        geom_area(aes(fill=variable, alpha=0.4)) +
+        facet_wrap(~ variable) +
+        xlab("Years") + 
+        ylab("Investment Amount ($)") + guides(guide = "legend") + 
+        labs(title="Three Modes of Investing")
+    }
+  })
   
-  ###############################
-  #### Create Timeline Graph ####
-  ###############################
 }
 
 shinyApp(ui = ui, server = server)
