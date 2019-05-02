@@ -1,0 +1,13 @@
+"0","# Assemble url (so it fits on screen)"
+"0","basket <- ""https://www.basketball-reference.com"""
+"0","bos <- ""/teams/BOS/2017.html"""
+"0","bos_url <- paste0(basket, bos)"
+"0","# download HTML file to your working directory"
+"0","download.file(bos_url, 'bos-roster-2017.html')"
+"2","trying URL 'https://www.basketball-reference.com/teams/BOS/2017.html'
+"
+"2","downloaded 557 KB
+
+"
+"0","# Read BOS Roster html table"
+"0","bos_roster <- readHTMLTable('bos-roster-2017.html')"
