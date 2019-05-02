@@ -1,0 +1,3 @@
+"0","basket <- ""https://www.basketball-reference.com"""
+"0","team1 <- ""/teams/GSW/2017.html"""
+"0","team_url <- paste0(basket, href[1])"

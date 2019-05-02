@@ -1,0 +1,146 @@
+---
+title: "Guide to using binomial"
+author: "Grant Kalasky"
+date: "5/1/2019"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to cointoss}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = T, comment = "#>")
+library(binomial)
+```
+
+## Binomial: An Introduction
+
+This package, `binomial`, is meant to provide functions that can be used 
+to calculate the  probabilities of a Binomial random variable. The package
+also includes other related functions including the probability
+distribution, variance, expected value, and more!
+
+
+## Bin Variable
+
+With this package, you can create a binomial variable using the 
+`bin_variable` function. 
+
+```{r}
+binvar1 <- bin_variable(5, 0.2)
+binvar1
+```
+
+It returns a list with named elements:
+- `trials`: the number of trials
+- `prob`: probability of success
+
+This list is a `binvar` binomial object. With this object, we can get a 
+full summary description of the `binvar` object using the `summary()` 
+function. It returns a list with the following named elements:
+– `trials`: number of trials
+– `prob`: probability of success
+– `mean`: mean or expected value
+– `variance`: variance
+– `mode`: mode
+– `skewness`: skewness
+– `kurtosis`: kurtosis
+
+```{r}
+summary(binvar1)
+```
+
+
+## Functions of measures
+
+The package also contains functions to calculate the numbers mentioned
+above in the `summary()` of a `binvar` binomial object. Below, we show 
+you how to invoke these functions to get these calculations:
+
+```{r}
+bin_mean(10, 0.3)
+
+bin_variance(10, 0.3)
+
+bin_mode(10, 0.3)
+
+bin_skewness(10, 0.3)
+
+bin_kurtosis(10, 0.3)
+
+```
+
+
+## Bin Choose
+
+This function calculates the number of combinations in which `k` successes
+can occur within `n` trials. You can invoke this function with `bin_choose`. 
+It takes two arguments, `n` which are the number of trials and `k` which 
+is the number of successes. 
+
+```{r}
+bin_choose(n = 5 , k = 2)
+bin_choose(4, 2)
+```
+
+
+## Bin Probability
+
+This function calculates the probability of a Binomial random variable,
+given the number of successes, trials, and probability of success. 
+
+```{r}
+bin_probability(success = 2, trials = 5, prob = 0.5)
+```
+
+
+## Bin Distribution
+
+This function, like `bin_probability`, calculates the probabilities of a
+Binomial random variable given the number of trials and probability of success. 
+However, this function outputs multiple probabilities given the number of 
+successes, from 0 successes to the inputed number of trials. 
+
+The output is a dataframe with a class `bindis`.
+
+```{r}
+bin_distribution(trials = 5, prob = 0.5)
+```
+
+
+## Bin Cumulative
+
+Similar to `bin_distribution`, the function `bin_cumulative()` outputs
+a dataframe with the probabilities of a Binomial random variable, but 
+includes the cumulative probability in addition to the probability 
+distribution of the Binomial random variable. 
+
+The output is a dataframe with a class `bincum`.
+
+```{r}
+bin_cumulative(trials = 5, prob = 0.5)
+```
+
+
+## Plotting `bindis` and `bincum` Objects
+
+You can use the function `plot()` to graph a `bindis` binomial 
+object. It returns a barplot that displays the probability histogram 
+of the `bindis` object. 
+
+```{r}
+dis1 <- bin_distribution(trials = 5, prob = 0.5)
+plot(dis1)
+```
+
+Similarly, you can also use the same function `plot()` to graph a 
+`bincum` binomial object. It returns a linegraph of the cumulative
+distribution of the `bincum` object. 
+
+```{r}
+dis2 <- bin_cumulative(trials = 5, prob = 0.5)
+plot(dis2)
+```
+
+

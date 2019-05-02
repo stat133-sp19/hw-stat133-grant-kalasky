@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1556141110049.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1258712432",
+    "id" : "2A328580",
+    "lastKnownWriteTime" : 1556167863,
+    "last_content_update" : 1556167863351,
+    "path" : "~/Berkeley/STATS133/labs/lab12/lab12-grant-kalasky.Rmd",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "161,6",
+        "scrollLine" : "133",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}
