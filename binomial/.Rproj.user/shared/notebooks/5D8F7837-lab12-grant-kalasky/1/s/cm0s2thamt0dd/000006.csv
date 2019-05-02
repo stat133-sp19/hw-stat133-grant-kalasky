@@ -1,4 +1,0 @@
-"0","roster <- readHTMLTable(team_url)"
-"2","Warning:"
-"2"," XML content does not seem to be XML: 'https://www.basketball-reference.com/teams/BOS/2017.html'
-"

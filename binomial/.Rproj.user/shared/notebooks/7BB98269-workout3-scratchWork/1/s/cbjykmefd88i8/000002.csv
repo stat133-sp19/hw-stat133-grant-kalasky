@@ -1,8 +1,0 @@
-"0","bin_kurtosis <- function(trials, prob) {"
-"0","  return(aux_kurtosis(trials, prob))"
-"0","}"
-"0","bin_kurtosis(10, 0.3)"
-"1","[1]"
-"1"," -0.1238095"
-"1","
-"

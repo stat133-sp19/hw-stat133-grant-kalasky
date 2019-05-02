@@ -1,7 +1,0 @@
-"0","# download HTML file to working directory"
-"0","download.file(team_url, html_files[16])"
-"2","trying URL 'https://www.basketball-reference.com/teams/BOS/2017.html'
-"
-"2","downloaded 557 KB
-
-"
